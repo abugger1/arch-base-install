@@ -1,0 +1,43 @@
+#!/bin/bash
+# Set Vars
+sctle="sudo systemctl enable"
+si="sed -i"
+e="$e"
+pcm="pacman"
+enstall="pacman -Sy --noconfirm"
+senstall="sudo pacman -Sy --noconfirm"
+# -------------------------------------
+# Install flatpak
+# -------------------------------------
+test ! -d /usr/bin/flatpak  && $e "true" || "fasle" test
+if [ test=true ]
+then
+  $senstall flatpak
+else
+  $e "flatpak is already installed"
+fi
+# ------------------------------------
+# Install Steam
+# ------------------------------------
+flatpak install flathub com.valvesoftware.Steam
+# flatpak run com.valvesoftware.Steam
+# -------------------------------------
+# Install heroic
+# -------------------------------------
+flatpak install flathub com.heroicgameslauncher.hgl
+# flatpak run com.heroicgameslauncher.hgl
+# -------------------------------------
+# Install lutrus
+# -------------------------------------
+flatpak install flathub net.lutris.Lutris
+# flatpak run net.lutris.Lutris
+# -------------------------------------
+# Install proton-up-qt
+# -------------------------------------
+flatpak install flathub net.davidotek.pupgui2
+# flatpak run net.davidotek.pupgui2
+# ------------------------------------
+# Install Bottles
+# ------------------------------------
+flatpak install flathub com.usebottles.bottles
+# flatpak run com.usebottles.bottles
