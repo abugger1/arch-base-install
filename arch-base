@@ -84,7 +84,7 @@ fi
 # Graphics Drivers find and install
 gpu_type=$(lspci)
 if grep -E "NVIDIA|GeForce" <<< ${gpu_type}; then
-    $enstall --needed 
+    $enstall --needed nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-settings vulkan-icd-loader lib32-vulkan-icd-loader mesa lib-32mesa
     $si 's/MODULES=()/MODULES=(btrfs snd-aloop nvidia nvidia_modeset nvidia_uvm nvidia_drm)'
 elif lspci | grep 'VGA' | grep -E "Radeon|AMD"; then
     $enstall --needed xf86-video-amdgpu
