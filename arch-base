@@ -3,22 +3,44 @@
 # Set Vars
 sctle="systemctl enable"
 si="sed -i"
-e="$e"
+e="echo"
 pcm="pacman"
 enstall="pacman -Sy --noconfirm"
 # Set locales and time
-ln -sf /usr/share/zoneinfo/US/Eastern /etc/localtime
+
+iso=$(curl -4 ifconfig.co/country-iso)
+timedatectl set-ntp true
+$enstall archlinux-keyring
+$enstall --needed pacman-contrib terminus-font
+setfont ter-v22b
+$si 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
+$enstall --needed reflector rsync grub
+cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
+
+if [ ! -d /etc/localtime ]; then
+  ln -sf /usr/share/zoneinfo/US/Eastern /etc/localtime
+fi
 hwclock --systohc
 $si '171s/.//' /etc/locale.gen
 locale-gen
 $e "LANG=en_US.UFT-8" >> /etc/locale.conf
+reflector -a 48 -c "$iso" -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
+mkdir /mnt &>/dev/null
 # Set hostname
 $e "arch" >> /etc/hostname
-$e "127.0.0.1    localhost" >> /etc/hosts
-$e "::1          localhost" >> /etc/hosts
-$e "127.0.1.1    arch.localdomain arch" >> /etc/hosts
+$e { "127.0.0.1    localhost"; "::1          localhost"; "127.0.1.1    arch.localdomain arch" } >> /etc/hosts
 # set root password -- comment oout to disable root account -- replace "password" to set password
-$e root:password | chpasswd
+set_root_password() {
+  read -rs -p "Please enter root password: " PASSWORD0
+  $e -ne "\n"
+  read -rs -p "Please re-enter root password: " PASSWORD1
+  if [[ "$PASSWORD0" == "$PASSWORD1" ]]; then
+    $e "root:${PASSWORD0} | chpasswd"
+  else
+    $e -ne "ERROR! Passwords do not match. \n"
+    set_root_password
+  fi
+}
 # add chaotic-aur
 $enstall archlinux-keyring
 pcm-key --init
@@ -27,9 +49,7 @@ pcm-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
 pcm-key --lsign-key 3056513887B78AEB
 $pcm -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
 # Modify pacman.conf
-test -f /etc/pacman.conf && echo "true" || "fasle" test0
-if [ test0=false ]
-then
+if [[ ! -f /etc/pacman.conf ]]; then
   $si '33s/.//' /etc/pacman.conf
   $si '37s/.//' /etc/pacman.conf
   $si '80s/.//' /etc/pacman.conf
@@ -41,35 +61,41 @@ else
   cp arch-base-install/pacman.conf /etc/pacman.conf
 fi
 # Modify makepkg.conf
-test -f /etc/makepkg.conf && echo "true" || "fasle" test1
-if [ test1=true ]
-then
+if [[ ! -f /etc/makepkg.conf ]]; then
   $si 's/march=x86-64/march=znver1/' /etc/makepkg.conf
-  $si 's/mtune=generic/mtune=znver1' /etc/makepkg.conf
+  $si 's/mtune=generic/mtune=znver1/' /etc/makepkg.conf
   $si '49s/.//' /etc/makepkg.conf
   $si 's/"-j2"/"-j13"' /etc/makepkg.conf
   $si '47s/.//' /etc/makepkg.conf
 else
   cp arch-base-install/makepkg.conf /etc/makepkg.conf
 fi
-# Install reflector and rsync sort mirrorlist
-$enstall reflector rsync
-  reflector --country 'United States' --latest 20 --protocol https --sort rat$e --save /etc/pacman.d/mirrorlist
-  reflector --country 'United States' --latest 20 --protocol http --sort rat$e --save /etc/pacman.d/mirrorlist
-  reflector --country 'United States' --latest 20 --protocol rsync --sort rat$e --save /etc/pacman.d/mirrorlist
-# Install ucode for cpu type
-read -p "Enter CPU: 1: AMD or 2: INTEL"  cpu
-if [ cpu=1 ]
-then
-  $e "is AMD cpu"
-  $enstall amd-ucode
-else
-  $e "is INTEL cpu"
-  $enstall intel-ucode
+# determine processor type and install microcode
+proc_type=$(lscpu)
+if grep -E "GenuineIntel" <<< ${proc_type}; then
+    echo "Installing Intel microcode"
+    $enstall --needed intel-ucode
+    proc_ucode=intel-ucode.img
+elif grep -E "AuthenticAMD" <<< ${proc_type}; then
+    echo "Installing AMD microcode"
+    $enstall --needed amd-ucode
+    proc_ucode=amd-ucode.img
+fi
+# Graphics Drivers find and install
+gpu_type=$(lspci)
+if grep -E "NVIDIA|GeForce" <<< ${gpu_type}; then
+    $enstall --needed 
+    $si 's/MODULES=()/MODULES=(btrfs snd-aloop nvidia nvidia_modeset nvidia_uvm nvidia_drm)'
+elif lspci | grep 'VGA' | grep -E "Radeon|AMD"; then
+    $enstall --needed xf86-video-amdgpu
+elif grep -E "Integrated Graphics Controller" <<< ${gpu_type}; then
+    $enstall --needed libva-intel-driver libvdpau-va-gl lib32-vulkan-intel vulkan-intel libva-intel-driver libva-utils lib32-mesa
+elif grep -E "Intel Corporation UHD" <<< ${gpu_type}; then
+    pacman -S --needed --noconfirm libva-intel-driver libvdpau-va-gl lib32-vulkan-intel vulkan-intel libva-intel-driver libva-utils lib32-mesa
 fi
 # install git github-cli lazygit
-read -p "Install git Packages? (Y)es : (n)o" git
-if [ git=n ]
+read -rs -p "Install git Packages? (Y)es : (n)o" git
+if [ "$git" = n ]
 then
   $e "Not Installing git Packages"
 else
@@ -77,8 +103,8 @@ else
   $enstall git lazygit github-cli
 fi
 # install flatpack
-read -p "Install flatpak? (Y)es (n)o" fp
-if [ fp=n ]
+read -rs -p "Install flatpak? (Y)es (n)o" fp
+if [ "$fp" = n ]
 then
   $e "Not Installing flatpak"
 else
@@ -89,37 +115,14 @@ fi
 $e "Installing Base Packages"
 $enstall efibootmgr networkmanager network-manager-applet dialog wpa_supplicant mtools dosfstools base-devel xdg-utils gvfs gvfs-smb nfs-utils inetutils bluez bluez-utils alsa-utils pipewire pipewire-alsa pipewire-pulse pipewire-jack bash-completion openssh acpi acpi_call tlp edk2-ovmf bridge-utils dnsmasq vde2 openbsd-netcat iptables-nft ipset firewalld sof-firmware nss-mdns acpid ntfs-3g btrfs-progs
 # Install Video Drivers
-read -p "What gpu? (i)ntel (a)md (n)vidia" gpu
-if [ gpu=n ]
-then 
-  Installing "Nvidia Propiatarty Drivers"
-  $enstall --needed nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-settings vulkan-icd-loader lib32-vulkan-icd-loader opencl-nvidia
-  $si 's/MODULES=()/MODULES=(btrfs snd-loop nvidia nvidia_modset nvidia_uvm nvidia_drm)/'
-  mkinit cpio -p linux-zen
-else
-if [ gpu=a ]
-then
-  $e "Installing amd Drivers"
-  $enstall --needed xf86-video-amdgpu
-else
-if [ gpu=i ]
-then
-  $e "Installing intel drivers"
-  $enstall --needed xf86-video-intel
-else
-  $e "Not Installing Video Drivers"
-fi
 # Install grub
-read -p "Install grub? (Y)es (n)o" grub
-if [ grub=n ]
-then
-  $e "Not Installing grub"
-else
-  $e "Installing grub"
+read -rs -p "Install grub? (Y)es (n)o" grub
+if [ "$grub" = y ]; then
   $enstall grub
+else
+  end
 fi
-test ! -d /boot/grub  && echo "true" || "fasle" test2
-if [ test2=true ]
+if [[ ! -d /boot/grub ]]
 then
   grub-install --target=X86_64-efi --efi-directory=/boot --bootloader-id=GRUB
   # Comment out if not using nvidia drivers
@@ -138,11 +141,23 @@ $sctle fstrim.timer
 $sctle libvirtd
 $sctle firewalld
 $sctle acpi
-# Add user change "sshep" for your username
-useradd -m sshep
 # Set user password -- change "password" fpr your password to set password for user
-$e sshep:password | chpasswd
-usermod -aG libvirt "sshep"
-usermod -aG libvirt-qemu "sshep"
+set_password() {
+  read -rs -p "Please enter user password: " PASSWORD2
+  $e -ne "\n"
+  read -rs -p "Please enter user password: " PASSWORD3
+  $e -ne "\n"
+if [[ "$PASSWORD2" == "$PASSWORD3" ]]; then
+  $e "sshep:${PASSWORD2} | chpasswd"
+else
+  $e -ne "ERROR! passwords do not match. \n"
+  set_password
+fi
+}
+# Add user change "sshep" for your username
+read -rs -p "Please enter user name: " USERNAME0
+useradd -m "${USERNAME0}"
+usermod -aG libvirt "${USERNAME0}"
+usermod -aG libvirt-qemu "${USERNAME0}"
 # usermod -aG doecker "sshep"
-$e "sshep ALL=(ALL) ALL" >> /etc/sudoers
+$e "${USERNAME0} ALL=(ALL) ALL" >> /etc/sudoers

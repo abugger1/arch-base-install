@@ -2,10 +2,6 @@
 #
 # Set Vars
 sctle="sudo systemctl enable"
-si="sed -i"
-e="$e"
-pcm="pacman"
-enstall="pacman -Sy --noconfirm"
 senstall="sudo pacman -Sy --noconfirm"
 # Set Time ntp on systohc
 sudo timedatectl set-ntp tru
@@ -15,24 +11,25 @@ $senstall gcc gcc-libs cmake make ninj
 # Install rustup
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # Update source in shell
+chmod +x $HOME/.cargo/env
 source $HOME/.cargo/env
 # Install paru-bin
-test ! -d ~/repos  && $e "true" || "fasle" test0
-if [ test0=true ]
-  then
+if [[ ! -d ~/repos ]]; then
     mkdir repo
-    cd repo
+    cd repo || cd ... || return
     git clone https://github.com/paru-bin.git
-    cd paru-bin
+    cd paru-bin || cd exit || return
     makepkg -si
-    cd
+    cd || cd ... || return
+    git clone https://github.com/paru-bin.git
     rm -rf repos/paru-bin
   else
-    cd repo
+    cd repo || cd ... || return
     git clone https://github.com/paru-bin.git
-    cd paru-bin
+    cd paru-bin || cd exit || return
     makepkg -si
-    cd
+    cd || cd ... || return
+    git clone https://github.com/paru-bin.git
     rm -rf repos/paru-bin
 fi
 # Installing zramd and timeshift
@@ -42,10 +39,10 @@ $sctle --now zramd
 # Installing starship
 cargo install starship
 # Installing hyprland and deps
-paru -S vivid kvantum flameshot zsh zsh-completions kitty kitty-terminfo unzip zoxide fzf wezterm aria2 bat fmn hyprland-nvidia-git python hyprpicker-git waybar-hyprland-git dunst nwg-look wf-recorder wlogout wlsunset colord ffmpegthumbnailer gnome-keyring grimblast-git gtk-engine-murrine imagemagick kvantum pamixer playerctl polkit-kde-agent qt5-quickcontrols qt5-quickcontrols2 qt5-wayland qt6-wayland swaybg ttf-font-awesome tumbler ttf-jetbrains-mono ttf-icomoon-feather xdg-desktop-portal-hyprland-git xdotool xwaylandvideobridge-cursor-mode-2-git cliphist qt5-imageformats qt5ct btop cava neofetch noise-suppression-for-voice rofi-lbonn-wayland-git rofi-emoji starship zsh viewnior ocs-url firefox brave-bin file-roller noto-fonts noto-fonts-cjk ttf-jetbrains-mono ttf-jetbrains-mono-nerd ttf-firacode-nerd noto-fonts-emoji thunar thunar-archive-plugin swww python-pywal spicetify-cli spotify mpv ani-cli catppuccin-gtk-theme-macchiato catppuccin-gtk-theme-mocha papirus-icon-theme sddm-git swaylock-effects-git kvantum kvantum-theme-catppuccin-git obs-studio-rc ffmpeg-obs cef-minimal-obs-rc-bin pipewire pipewire-alsa pipewire-audio pipewire-pulse pipewire-jack wireplumber gst-plugin-pipewire pavucontrol tutanota-desktop-bin
+paru -S --needed vivid kvantum flameshot zsh zsh-completions kitty kitty-terminfo unzip zoxide fzf wezterm aria2 bat fmn hyprland-nvidia-git python hyprpicker-git waybar-hyprland-git dunst nwg-look wf-recorder wlogout wlsunset colord ffmpegthumbnailer gnome-keyring grimblast-git gtk-engine-murrine imagemagick kvantum pamixer playerctl polkit-kde-agent qt5-quickcontrols qt5-quickcontrols2 qt5-wayland qt6-wayland swaybg ttf-font-awesome tumbler ttf-jetbrains-mono ttf-icomoon-feather xdg-desktop-portal-hyprland-git xdotool xwaylandvideobridge-cursor-mode-2-git cliphist qt5-imageformats qt5ct btop cava neofetch noise-suppression-for-voice rofi-lbonn-wayland-git rofi-emoji starship zsh viewnior ocs-url firefox brave-bin file-roller noto-fonts noto-fonts-cjk ttf-jetbrains-mono ttf-jetbrains-mono-nerd ttf-firacode-nerd noto-fonts-emoji thunar thunar-archive-plugin swww python-pywal spicetify-cli spotify mpv ani-cli catppuccin-gtk-theme-macchiato catppuccin-gtk-theme-mocha papirus-icon-theme sddm-git swaylock-effects-git kvantum kvantum-theme-catppuccin-git obs-studio-rc ffmpeg-obs cef-minimal-obs-rc-bin pipewire pipewire-alsa pipewire-audio pipewire-pulse pipewire-jack wireplumber gst-plugin-pipewire pavucontrol tutanota-desktop-bin
 # Enabling sddm service
 $sctle sddm
 # Todo add git repo for dot files
-#
-# cd $HOME/repos/dots/
+git clone https://github.com/abugger1/hyprlanddots/tree/master
+cd $HOME/repos/dots/ || cd exit || return
 # rsync -avxAHXP --exclude '.git*' .* ~/
