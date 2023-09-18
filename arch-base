@@ -1,0 +1,143 @@
+#!/bin/bash
+
+# Set Vars
+sctle="systemctl enable"
+si="sed -i"
+e="$e"
+pcm="pacman"
+enstall="pacman -Sy --noconfirm"
+# Set locales and time
+ln -sf /usr/share/zoneinfo/US/Eastern /etc/localtime
+hwclock --systohc
+$si '171s/.//' /etc/locale.gen
+locale-gen
+$e "LANG=en_US.UFT-8" >> /etc/locale.conf
+# Set hostname
+$e "arch" >> /etc/hostname
+$e "127.0.0.1    localhost" >> /etc/hosts
+$e "::1          localhost" >> /etc/hosts
+$e "127.0.1.1    arch.localdomain arch" >> /etc/hosts
+# set root password -- comment oout to disable root account -- replace "password" to set password
+$e root:password | chpasswd
+# add chaotic-aur
+$enstall archlinux-keyring
+pcm-key --init
+pcm-key --populate
+pcm-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+pcm-key --lsign-key 3056513887B78AEB
+$pcm -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+# Modify pacman.conf
+test -f /etc/pacman.conf && echo "true" || "fasle" test0
+if [ test0=false ]
+then
+  $si '33s/.//' /etc/pacman.conf
+  $si '37s/.//' /etc/pacman.conf
+  $si '80s/.//' /etc/pacman.conf
+  $si '95s/.//' /etc/pacman.conf
+  $e "[chaotic-aur]
+#Siglevel=never
+Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
+else
+  cp arch-base-install/pacman.conf /etc/pacman.conf
+fi
+# Modify makepkg.conf
+test -f /etc/makepkg.conf && echo "true" || "fasle" test1
+if [ test1=true ]
+then
+  $si 's/march=x86-64/march=znver1/' /etc/makepkg.conf
+  $si 's/mtune=generic/mtune=znver1' /etc/makepkg.conf
+  $si '49s/.//' /etc/makepkg.conf
+  $si 's/"-j2"/"-j13"' /etc/makepkg.conf
+  $si '47s/.//' /etc/makepkg.conf
+else
+  cp arch-base-install/makepkg.conf /etc/makepkg.conf
+fi
+# Install reflector and rsync sort mirrorlist
+$enstall reflector rsync
+  reflector --country 'United States' --latest 20 --protocol https --sort rat$e --save /etc/pacman.d/mirrorlist
+  reflector --country 'United States' --latest 20 --protocol http --sort rat$e --save /etc/pacman.d/mirrorlist
+  reflector --country 'United States' --latest 20 --protocol rsync --sort rat$e --save /etc/pacman.d/mirrorlist
+# Install ucode for cpu type
+read -p "Enter CPU: 1: AMD or 2: INTEL"  cpu
+if [ cpu=1 ]
+then
+  $e "is AMD cpu"
+  $enstall amd-ucode
+else
+  $e "is INTEL cpu"
+  $enstall intel-ucode
+fi
+# install git github-cli lazygit
+read -p "Install git Packages? (Y)es : (n)o" git
+if [ git=n ]
+then
+  $e "Not Installing git Packages"
+else
+  $e "Installing git Packages"
+  $enstall git lazygit github-cli
+fi
+# install flatpack
+read -p "Install flatpak? (Y)es (n)o" fp
+if [ fp=n ]
+then
+  $e "Not Installing flatpak"
+else
+  $e "Installing flatpak"
+  $enstall flatpak
+fi
+# Install Base Packages
+$e "Installing Base Packages"
+$enstall efibootmgr networkmanager network-manager-applet dialog wpa_supplicant mtools dosfstools base-devel xdg-utils gvfs gvfs-smb nfs-utils inetutils bluez bluez-utils alsa-utils pipewire pipewire-alsa pipewire-pulse pipewire-jack bash-completion openssh acpi acpi_call tlp edk2-ovmf bridge-utils dnsmasq vde2 openbsd-netcat iptables-nft ipset firewalld sof-firmware nss-mdns acpid ntfs-3g btrfs-progs
+# Install Video Drivers
+read -p "What gpu? (i)ntel (a)md (n)vidia" gpu
+if [ gpu=n ]
+then 
+  Installing "Nvidia Propiatarty Drivers"
+  $enstall --needed nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-settings vulkan-icd-loader lib32-vulkan-icd-loader opencl-nvidia
+else
+if [ gpu=a ]
+then
+  $e "Installing amd Drivers"
+  $enstall --needed xf86-video-amdgpu
+else
+if [ gpu=i ]
+then
+  $e "Installing intel drivers"
+  $enstall --needed xf86-video-intel
+else
+  $e "Not Installing Video Drivers"
+fi
+# Install grub
+read -p "Install grub? (Y)es (n)o" grub
+if [ grub=n ]
+then
+  $e "Not Installing grub"
+else
+  $e "Installing grub"
+  $enstall grub
+fi
+test ! -d /boot/grub  && echo "true" || "fasle" test2
+if [ test2=true ]
+then
+  grub-install --target=X86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+  grub-mkconfig -o /boot/grub/grub.cfg
+else
+  $e "grub already installed"
+fi
+# Enable services
+$sctle networkmanager
+$sctle bluetooth
+$sctle sshd
+$sctle tlp
+$sctle fstrim.timer
+$sctle libvirtd
+$sctle firewalld
+$sctle acpi
+# Add user change "sshep" for your username
+useradd -m sshep
+# Set user password -- change "password" fpr your password to set password for user
+$e sshep:password | chpasswd
+usermod -aG libvirt "sshep"
+usermod -aG libvirt-qemu "sshep"
+# usermod -aG doecker "sshep"
+$e "sshep ALL=(ALL) ALL" >> /etc/sudoers
