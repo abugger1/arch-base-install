@@ -1,20 +1,15 @@
 #!/bin/bash
 # Set Vars
-sctle="sudo systemctl enable"
-si="sed -i"
-e="$e"
-pcm="pacman"
-enstall="pacman -Sy --noconfirm"
+e="echo"
 senstall="sudo pacman -Sy --noconfirm"
 # -------------------------------------
 # Install flatpak
 # -------------------------------------
-test ! -d /usr/bin/flatpak  && $e "true" || "fasle" test
-if [ test=true ]
-then
+if [ ! -d /usr/bin/flatpak ]; then
   $senstall flatpak
 else
   $e "flatpak is already installed"
+  exit
 fi
 # ------------------------------------
 # Install Steam
