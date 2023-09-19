@@ -10,7 +10,6 @@ e="echo"
 pcm="pacman"
 enstall="pacman -Sy --noconfirm"
 # Set locales and time
-
 iso=$(curl -4 ifconfig.co/country-iso)
 timedatectl set-ntp true
 $enstall archlinux-keyring
@@ -19,14 +18,13 @@ setfont ter-v22b
 $si 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
 $enstall --needed reflector rsync grub
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
-
 if [ ! -d /etc/localtime ]; then
   ln -sf /usr/share/zoneinfo/US/Eastern /etc/localtime
 fi
 hwclock --systohc
 $si '171s/.//' /etc/locale.gen
 locale-gen
-$e "LANG=en_US.UFT-8" >> /etc/locale.conf
+localectl --no-ask-password set-locale LANG="en_US.UTF-8" LC_TIME="en_US.UTF-8"
 reflector -a 48 -c "$iso" -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
 mkdir /mnt &>/dev/null
 # Set hostname
@@ -137,35 +135,34 @@ if [[ ! -d /boot/grub ]]; then
 else
   $e "grub already installed"
   fi
-  # Enable services
-  $sctle networkmanager
-  $sctle bluetooth
-  $sctle sshd
-  $sctle tlp
-  $sctle fstrim.timer
-  $sctle libvirtd
-  $sctle firewalld
-  $sctle acpi
-  # Set user password -- change "password" fpr your password to set password for user
-  set_password() {
-    read -rs -p "Please enter user password: " PASSWORD2
-    $e -ne "\n"
-    read -rs -p "Please enter user password: " PASSWORD3
-    $e -ne "\n"
-    if [[ "$PASSWORD2" == "$PASSWORD3" ]]; then
-      $e "sshep:${PASSWORD2} | chpasswd"
-    else
-      $e -ne "ERROR! passwords do not match. \n"
-      set_password
-    fi
-  }
-  # Add user change "sshep" for your username
-  read -rs -p "Please enter user name: " USERNAME0
-  useradd -m "${USERNAME0}"
-  usermod -aG libvirt "${USERNAME0}"
-  usermod -aG libvirt-qemu "${USERNAME0}"
-  # usermod -aG doecker "sshep"
-  $e "${USERNAME0} ALL=(ALL) ALL" >> /etc/sudoers
-
+# Enable services
+$sctle networkmanager
+$sctle bluetooth
+$sctle sshd
+$sctle tlp
+$sctle fstrim.timer
+$sctle libvirtd
+$sctle firewalld
+$sctle acpi
+# Set user password -- change "password" fpr your password to set password for user
+set_password() {
+  read -rs -p "Please enter user password: " PASSWORD2
+  $e -ne "\n"
+  read -rs -p "Please enter user password: " PASSWORD3
+  $e -ne "\n"
+  if [[ "$PASSWORD2" == "$PASSWORD3" ]]; then
+    $e "sshep:${PASSWORD2} | chpasswd"
+  else
+    $e -ne "ERROR! passwords do not match. \n"
+    set_password
+  fi
+}
+# Add user change "sshep" for your username
+read -rs -p "Please enter user name: " USERNAME0
+useradd -m "${USERNAME0}"
+usermod -aG libvirt "${USERNAME0}"
+usermod -aG libvirt-qemu "${USERNAME0}"
+# usermod -aG doecker "sshep"
+$e "${USERNAME0} ALL=(ALL) ALL" >> /etc/sudoers
 mv /arch-base-install /home/sshep/repos
 $e -ne "base install complete reboot and run next script \n"
