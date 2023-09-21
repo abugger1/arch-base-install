@@ -93,4 +93,5 @@ pipewire-jack
 wireplumber
 gst-plugin-pipewire
 pavucontrol
-tutanota-desktop-bin/g
+tutanota-desktop-bin
+--END OF INSTALL--

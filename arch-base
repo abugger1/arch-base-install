@@ -2,7 +2,6 @@
 #
 #
 #
-source /arch-base-install/pkg-files
 # Set Vars
 sctle="systemctl enable"
 si="sed -i"
@@ -29,7 +28,9 @@ reflector -a 48 -c "$iso" -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
 mkdir /mnt &>/dev/null
 # Set hostname
 $e "arch" >> /etc/hostname
-$e { "127.0.0.1    localhost"; "::1          localhost"; "127.0.1.1    arch.localdomain arch" } >> /etc/hosts
+$e  "127.0.0.1    localhost" >> /etc/hosts
+$e "::1          localhost" >> /etc/hosts
+$e "127.0.1.1    arch.localdomain arch"  >> /etc/hosts
 # set root password -- comment oout to disable root account -- replace "password" to set password
 set_root_password() {
   read -rs -p "Please enter root password: " PASSWORD0
@@ -118,7 +119,15 @@ else
 fi
 # Install Base Packages
 $e "Installing Base Packages"
-$enstall ${basepkglist.txt}
+cat $HOME/arch-base-install/pkg-files/basepkgs.txt | while read line
+do
+    if [[ ${line} == '--END OF BASE INSTALL--' ]]; then
+        # If selected installation type is FULL, skip the --END OF THE MINIMAL INSTALLATION-- line
+        continue
+    fi
+    echo "INSTALLING: ${line}"
+    pikaur -S --noconfirm --needed ${line}
+done
 # Install grub
 read -rs -p "Install grub? (Y)es (n)o" grub
 if [ "$grub" = y ]; then

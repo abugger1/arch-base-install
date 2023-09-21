@@ -1,7 +1,7 @@
 #!/bin/bash
 # Set Vars
 e="echo"
-senstall="sudo pacman -Sy --noconfirm"
+senstall="sudo pacman -Sy --needed --noconfirm"
 # -------------------------------------
 # Install flatpak
 # -------------------------------------

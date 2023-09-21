@@ -35,3 +35,4 @@ nss-mdns
 acpid
 ntfs-3g
 btrfs-progsg
+--END OF BASE INSTALL--

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 #
-source $HOME/arch-base-install/pkg-files
 #
 sctle="sudo systemctl enable"
 senstall="sudo pacman -Sy --noconfirm"
@@ -25,7 +24,7 @@ if [[ ! -d ~/repos ]]; then
     cd || cd ... || return
     git clone https://github.com/paru-bin.git
     rm -rf repos/paru-bin
-  else
+else
     cd repo || cd ... || return
     git clone https://github.com/paru-bin.git
     cd paru-bin || cd exit || return
@@ -41,7 +40,15 @@ $sctle --now zramd
 # Installing starship
 cargo install starship
 # Installing hyprland and deps
-paru -Sy --needed ${hyprpkgs.txt}
+cat $HOME/arch-base-install/pkg-files/hyprpkgs.txt | while read line
+do
+    if [[ ${line} == '--END OF INSTALL--' ]]; then
+        # If selected installation type is FULL, skip the --END OF THE MINIMAL INSTALLATION-- line
+        continue
+    fi
+    echo "INSTALLING: ${line}"
+    pikaur -S --noconfirm --needed ${line}
+done
 # Enabling sddm service
 $sctle sddm
 # Todo add git repo for dot files
