@@ -8,7 +8,7 @@ senstall="sudo pacman -Sy --noconfirm"
 sudo timedatectl set-ntp tru
 sudo hwclock --systoh
 # Install deps for making rustup
-$senstall gcc gcc-libs cmake make ninj
+$senstall gcc gcc-libs cmake make ninja
 # Install rustup
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # Update source in shell
