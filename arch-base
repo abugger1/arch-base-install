@@ -31,7 +31,7 @@ $e "arch" >> /etc/hostname
 $e  "127.0.0.1    localhost" >> /etc/hosts
 $e "::1          localhost" >> /etc/hosts
 $e "127.0.1.1    arch.localdomain arch"  >> /etc/hosts
-# set root password -- comment oout to disable root account -- replace "password" to set password
+# set root password
 set_root_password() {
     read -rs -p "Please enter root password: " PASSWORD0
     $e -ne "\n"
