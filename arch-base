@@ -3,38 +3,50 @@
 #
 #
 # Set Vars
+
+
+
 sctle="systemctl enable"
 si="sed -i"
 e="echo"
 pky="pacman-key"
 pcm="pacman"
 enstall="pacman -Sy --noconfirm --needed"
-# Set locales and time
+
+
 iso=$(curl -4 ifconfig.co/country-iso)
 timedatectl set-ntp true
 $enstall archlinux-keyring
 $enstall pacman-contrib terminus-font
 setfont ter-v22b
+
+
 $si 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
 $si 's/^#color/color/' /etc/pacman.conf
 $si 's/^#[extra]/[extra]/' /etc/pacman.conf
+
+
 $enstall --needed reflector rsync grub
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
 if [ ! -d /etc/localtime ]; then
     ln -sf /usr/share/zoneinfo/US/Eastern /etc/localtime
 fi
+
+
 hwclock --systohc
 $si '171s/.//' /etc/locale.gen
 locale-gen
-localectl --no-ask-password set-locale LANG="en_US.UTF-8" LC_TIME="en_US.UTF-8"
+localectl --no-ask-password set-locale LANG=" en_US.UTF-8" LC_TIME=" en_US.UTF-8"
 reflector -a 48 -c "$iso" -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
 mkdir /mnt &>/dev/null
-# Set hostname
+
+
 $e "arch" >> /etc/hostname
 $e  "127.0.0.1    localhost" >> /etc/hosts
 $e "::1          localhost" >> /etc/hosts
 $e "127.0.1.1    arch.localdomain arch"  >> /etc/hosts
-# set root password
+
+
 set_root_password() {
     read -rs -p "Please enter root password: " PASSWORD0
     $e -ne "\n"
@@ -47,14 +59,17 @@ set_root_password() {
     fi
 }
 set_root_password
-# add chaotic-aur
+
+
 $enstall archlinux-keyring
 $pky --init
 $pky --populate
 $pky --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
 $pky --lsign-key 3056513887B78AEB
 $pcm -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
-# Modify pacman.conf
+
+
+
     $si '78s/#//' /etc/pacman.conf
     $si '79s/#//' /etc/pacman.conf
     $si '84s/#//' /etc/pacman.conf
@@ -64,7 +79,9 @@ $pcm -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 
     $e "[chaotic-aur]
     #Siglevel=never
     Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
-# Modify makepkg.conf
+
+
+
 nc=$(grep -c ^processor /proc/cpuinfo)
 echo -ne "
 -------------------------------------------------------------------------
@@ -80,7 +97,9 @@ if [[  $TOTAL_MEM -gt 8000000 ]]; then
 else
     exit
 fi
-# determine processor type and install microcode
+
+
+
 proc_type=$(lscpu)
 if grep -E "GenuineIntel" <<< ${proc_type}; then
     echo "Installing Intel microcode"
@@ -91,7 +110,9 @@ elif grep -E "AuthenticAMD" <<< ${proc_type}; then
     $enstall --needed amd-ucode
     proc_ucode=amd-ucode.img
 fi
-# Graphics Drivers find and install
+
+
+
 gpu_type=$(lspci)
 if grep -E "NVIDIA|GeForce" <<< ${gpu_type}; then
     $enstall nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-settings vulkan-icd-loader lib32-vulkan-icd-loader mesa lib32-mesa
@@ -103,7 +124,9 @@ elif grep -E "Integrated Graphics Controller" <<< ${gpu_type}; then
 elif grep -E "Intel Corporation UHD" <<< ${gpu_type}; then
     $enstall libva-intel-driver libvdpau-va-gl lib32-vulkan-intel vulkan-intel libva-intel-driver libva-utils lib32-mesa
 fi
-# install git github-cli lazygit
+
+
+
 read -rs -p "Install git Packages? (Y)es : (n)o" git
 if [ "$git" = n ]
 then
@@ -112,7 +135,9 @@ else
     $e "Installing git Packages"
     $enstall git lazygit github-cli
 fi
-# install flatpack
+
+
+
 read -rs -p "Install flatpak? (Y)es (n)o" fp
 if [ "$fp" = n ]
 then
@@ -121,34 +146,41 @@ else
     $e "Installing flatpak"
     $enstall flatpak
 fi
-# Install Base Packages
+
+
+
 $e "Installing Base Packages"
 cat $HOME/arch-base-install/pkg-files/basepkgs.txt | while read line
 do
     if [[ ${line} == '--END OF BASE INSTALL--' ]]; then
-        # If selected installation type is FULL, skip the --END OF THE MINIMAL INSTALLATION-- line
         continue
     fi
     echo "INSTALLING: ${line}"
     pikaur -S --noconfirm --needed ${line}
 done
-# Install grub
+
+
+
 read -rs -p "Install grub? (Y)es (n)o" grub
 if [ "$grub" = y ]; then
     $enstall grub
 else
 end
 fi
+
+
 if [[ ! -d /boot/grub ]]; then
     grub-install --target=X86_64-efi --efi-directory=/boot --bootloader-id=GRUB
-    # Comment out if not using nvidia drivers
+
     $si 's/GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet"/GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet splash amd_iommu=on iommu=pt nvidia_drm.modeset=1"/'
-    # Comment out if not using nvidia drivers
+
     grub-mkconfig -o /boot/grub/grub.cfg
 else
     $e "grub already installed"
     fi
-    # Enable services
+
+
+
     $sctle networkmanager
     $sctle bluetooth
     $sctle sshd
@@ -157,7 +189,9 @@ else
     $sctle libvirtd
     $sctle firewalld
     $sctle acpi
-    # Set user password -- change "password" fpr your password to set password for user
+
+
+
     set_password() {
         read -rs -p "Please enter user password: " PASSWORD2
         $e -ne "\n"
@@ -170,12 +204,22 @@ else
             set_password
         fi
     }
-    # Add user change "sshep" for your username
+set_password
+
+
+
+set_username(){
     read -rs -p "Please enter user name: " USERNAME0
     useradd -m "${USERNAME0}"
     usermod -aG libvirt "${USERNAME0}"
     usermod -aG libvirt-qemu "${USERNAME0}"
-    # usermod -aG doecker "sshep"
     $e "${USERNAME0} ALL=(ALL) ALL" >> /etc/sudoers
+}
+set_username
+
+
+
     mv /arch-base-install /home/sshep/repos
-    $e -ne "base install complete reboot and run next script \n"
+
+
+    $e "base install complete reboot and run next script \n"
