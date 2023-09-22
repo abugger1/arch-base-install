@@ -7,6 +7,7 @@ sctle="systemctl enable"
 si="sed -i"
 e="echo"
 pky="pacman-key"
+pcm="pacman"
 enstall="pacman -Sy --noconfirm --needed"
 # Set locales and time
 iso=$(curl -4 ifconfig.co/country-iso)
