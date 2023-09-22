@@ -85,27 +85,27 @@ Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
 
 
 
-nc=$(grep -c ^processor /proc/cpuinfo)
-$e -ne "
--------------------------------------------------------------------------
-You have " $nc" cores. And
-changing the makeflags for "$nc" cores. Aswell as
-changing the compression settings.
--------------------------------------------------------------------------
-"
-TOTAL_MEM=$(cat /proc/meminfo | grep -i 'memtotal' | grep -o '[[:digit:]]*')
-if [[  $TOTAL_MEM -gt 8000000 ]]; then
-    $si "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j$nc\"/g" /etc/makepkg.conf
-    $si "s/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -T $nc -z -)/g" /etc/makepkg.conf
-    if [[ ! $? -eq 0 ]]; then
-        $e "ERROR!"
-        mv /etc/makepkg.conf.bkp /etc/makepkg.conf
-        mv /etc/pacman.conf.bkp /etc/pacman.conf
-    fi
-else
-    $e $?
-    exit
-fi
+# nc=$(grep -c ^processor /proc/cpuinfo)
+# $e -ne "
+# -------------------------------------------------------------------------
+# You have " $nc" cores. And
+# changing the makeflags for "$nc" cores. Aswell as
+# changing the compression settings.
+# -------------------------------------------------------------------------
+# "
+# TOTAL_MEM=$(cat /proc/meminfo | grep -i 'memtotal' | grep -o '[[:digit:]]*')
+# if [[  $TOTAL_MEM -gt 8000000 ]]; then
+#     $si "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j$nc\"/g" /etc/makepkg.conf
+#     $si "s/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -T $nc -z -)/g" /etc/makepkg.conf
+#     if [[ ! $? -eq 0 ]]; then
+#         $e "ERROR!"
+#         mv /etc/makepkg.conf.bkp /etc/makepkg.conf
+#         mv /etc/pacman.conf.bkp /etc/pacman.conf
+#     fi
+# else
+#     $e $?
+#     exit
+# fi
 
 
 
