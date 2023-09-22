@@ -16,6 +16,8 @@ $enstall archlinux-keyring
 $enstall pacman-contrib terminus-font
 setfont ter-v22b
 $si 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
+$si 's/^#color/color/' /etc/pacman.conf
+$si 's/^#[extra]/[extra]/' /etc/pacman.conf
 $e "ILoveCandy" >> /etc/pacman.conf
 $enstall --needed reflector rsync grub
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
@@ -54,17 +56,15 @@ $pky --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
 $pky --lsign-key 3056513887B78AEB
 $pcm -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
 # Modify pacman.conf
-if [[ ! -f /etc/pacman.conf ]]; then
-    $si '33s/.//' /etc/pacman.conf
-    $si '37s/.//' /etc/pacman.conf
-    $si '80s/.//' /etc/pacman.conf
-    $si '95s/.//' /etc/pacman.conf
+    $si '78s/#//' /etc/pacman.conf
+    $si '79s/#//' /etc/pacman.conf
+    $si '84s/#//' /etc/pacman.conf
+    $si '85s/#//' /etc/pacman.conf
+    $si '93s/#//' /etc/pacman.conf
+    $si '94s/#//' /etc/pacman.conf
     $e "[chaotic-aur]
     #Siglevel=never
     Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
-else
-    exit
-fi
 # Modify makepkg.conf
 nc=$(grep -c ^processor /proc/cpuinfo)
 echo -ne "
