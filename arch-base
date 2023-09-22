@@ -73,15 +73,15 @@ $pcm -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 
 
 
 
+$e "[chaotic-aur]
+#Siglevel=never
+Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
     $si '78s/#//' /etc/pacman.conf
     $si '79s/#//' /etc/pacman.conf
     $si '84s/#//' /etc/pacman.conf
     $si '85s/#//' /etc/pacman.conf
     $si '93s/#//' /etc/pacman.conf
     $si '94s/#//' /etc/pacman.conf
-    $e "[chaotic-aur]
-    #Siglevel=never
-    Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
 
 
 
