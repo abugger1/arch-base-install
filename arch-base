@@ -22,7 +22,7 @@ setfont ter-v22b
 
 
 cp /etc/makepkg.conf /etc/makepkg.conf.bkp
-cp /etc/makepkg.conf /etc/makepkg.conf.bkp
+cp /etc/pacman.conf /etc/pacman.conf.bkp
 
 
 $si 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
