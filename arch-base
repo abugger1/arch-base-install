@@ -18,7 +18,6 @@ setfont ter-v22b
 $si 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
 $si 's/^#color/color/' /etc/pacman.conf
 $si 's/^#[extra]/[extra]/' /etc/pacman.conf
-$e "ILoveCandy" >> /etc/pacman.conf
 $enstall --needed reflector rsync grub
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
 if [ ! -d /etc/localtime ]; then
