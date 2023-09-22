@@ -16,7 +16,7 @@ $enstall archlinux-keyring
 $enstall pacman-contrib terminus-font
 setfont ter-v22b
 $si 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
-$e "ILoveCandy"
+$e "ILoveCandy" >> /etc/pacman.conf
 $enstall --needed reflector rsync grub
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
 if [ ! -d /etc/localtime ]; then
