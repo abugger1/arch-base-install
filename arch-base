@@ -6,7 +6,7 @@
 sctle="systemctl enable"
 si="sed -i"
 e="echo"
-pcm="pacman"
+pky="pacman-key"
 enstall="pacman -Sy --noconfirm --needed"
 # Set locales and time
 iso=$(curl -4 ifconfig.co/country-iso)
@@ -44,12 +44,13 @@ set_root_password() {
         set_root_password
     fi
 }
+set_root_password
 # add chaotic-aur
 $enstall archlinux-keyring
-pcm-key --init
-pcm-key --populate
-pcm-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
-pcm-key --lsign-key 3056513887B78AEB
+$pky --init
+$pky --populate
+$pky --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+$pky --lsign-key 3056513887B78AEB
 $pcm -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
 # Modify pacman.conf
 if [[ ! -f /etc/pacman.conf ]]; then
