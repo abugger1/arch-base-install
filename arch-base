@@ -22,7 +22,7 @@ setfont ter-v22b
 
 
 $si 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
-$si 's/^#color/color/' /etc/pacman.conf
+$si 's/^#Color/Color/' /etc/pacman.conf
 
 
 $enstall --needed reflector rsync grub
