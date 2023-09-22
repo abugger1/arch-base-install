@@ -21,6 +21,10 @@ $enstall pacman-contrib terminus-font
 setfont ter-v22b
 
 
+cp /etc/makepkg.conf /etc/makepkg.conf.bkp
+cp /etc/makepkg.conf /etc/makepkg.conf.bkp
+
+
 $si 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
 $si 's/^#Color/Color/' /etc/pacman.conf
 
@@ -95,6 +99,8 @@ if [[  $TOTAL_MEM -gt 8000000 ]]; then
     sed -i "s/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -T $nc -z -)/g" /etc/makepkg.conf
 else
     $e $?
+    mv /etc/pacman.conf.bkp /etc/pacman.conf
+    mv /etc/makepkg.conf.bkp /etc/make.pkg.conf
     exit
 fi
 
