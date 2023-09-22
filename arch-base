@@ -99,6 +99,8 @@ if [[  $TOTAL_MEM -gt 8000000 ]]; then
     $si "s/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -T $nc -z -)/g" /etc/makepkg.conf
     if [[ ! $? -eq 0 ]]; then
         $e "ERROR!"
+        mv /etc/makepkg.conf.bkp /etc/makepkg.conf
+        mv /etc/pacman.conf.bkp /etc/pacman.conf
     fi
 else
     $e $?
