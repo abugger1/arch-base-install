@@ -15,6 +15,7 @@ $enstall archlinux-keyring
 $enstall pacman-contrib terminus-font
 setfont ter-v22b
 $si 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
+$e "ILoveCandy"
 $enstall --needed reflector rsync grub
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
 if [ ! -d /etc/localtime ]; then
@@ -73,8 +74,10 @@ changing the compression settings.
 "
 TOTAL_MEM=$(cat /proc/meminfo | grep -i 'memtotal' | grep -o '[[:digit:]]*')
 if [[  $TOTAL_MEM -gt 8000000 ]]; then
-    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j$nc\"/g" /etc/makepkg.conf
-    sed -i "s/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -T $nc -z -)/g" /etc/makepkg.conf
+    $si "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j$nc\"/g" /etc/makepkg.conf
+    $si "s/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -T $nc -z -)/g" /etc/makepkg.conf
+else
+    exit
 fi
 # determine processor type and install microcode
 proc_type=$(lscpu)
