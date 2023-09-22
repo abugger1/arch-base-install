@@ -23,7 +23,6 @@ setfont ter-v22b
 
 $si 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
 $si 's/^#color/color/' /etc/pacman.conf
-$si 's/^#[extra]/[extra]/' /etc/pacman.conf
 
 
 $enstall --needed reflector rsync grub
@@ -95,7 +94,8 @@ if [[  $TOTAL_MEM -gt 8000000 ]]; then
     $si "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j$nc\"/g" /etc/makepkg.conf
     $si "s/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -T $nc -z -)/g" /etc/makepkg.conf
 else
-    exit
+   $e $?
+   exit
 fi
 
 
