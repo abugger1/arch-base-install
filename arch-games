@@ -36,3 +36,15 @@ flatpak install flathub net.davidotek.pupgui2
 # ------------------------------------
 flatpak install flathub com.usebottles.bottles
 # flatpak run com.usebottles.bottles
+
+
+$e "Installing Lutris Dependencies"
+cat $HOME/arch-base-install/pkg-files/lutris-deps | while read line
+do
+    if [[ ${line} == '--END OF INSTALL--' ]]; then
+        continue
+    fi
+    $e "INSTALLING: ${line}"
+    pacman -Sy --noconfirm --needed ${line}
+done
+
