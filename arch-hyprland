@@ -2,6 +2,7 @@
 #
 #
 #
+e="echo"
 sctle="sudo systemctl enable"
 senstall="sudo pacman -Sy --noconfirm"
 # Set Time ntp on systohc
@@ -14,33 +15,31 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # Update source in shell
 chmod +x $HOME/.cargo/env
 source $HOME/.cargo/env
-# Install paru-bin
+# Install pikaur
 if [[ ! -d ~/repos ]]; then
-    mkdir repo
-    cd repo || cd ... || return
-    git clone https://github.com/paru-bin.git
-    cd paru-bin || cd exit || return
+    mkdir repos
+    cd repos || cd ... || return
+    git clone https://aur.archlinux.org/pikaur.git
+    cd pikaur || cd exit || return
     makepkg -si
     cd || cd ... || return
-    git clone https://github.com/paru-bin.git
-    rm -rf repos/paru-bin
+    rm -rf repos/pikaur
 else
-    cd repo || cd ... || return
-    git clone https://github.com/paru-bin.git
-    cd paru-bin || cd exit || return
+    cd repos || cd ... || return
+    git clone https://aur.archlinux.org/pikaur.git
+    cd pikaur || cd exit || return
     makepkg -si
     cd || cd ... || return
-    git clone https://github.com/paru-bin.git
-    rm -rf repos/paru-bin
+    rm -rf repos/pikaur
 fi
 # Installing zramd and timeshift
-paru -s zramd timeshift timeshift-autosnap
+pikaur -S zramd timeshift timeshift-autosnap
 # Enabling zramd
 $sctle --now zramd
 # Installing starship
 cargo install starship
 # Installing hyprland and deps
-cat $HOME/arch-base-install/pkg-files/hyprpkgs.txt | while read line
+cat $HOME/repos/arch-base-install/pkg-files/hyprpkgs.txt | while read line
 do
     if [[ ${line} == '--END OF INSTALL--' ]]; then
         # If selected installation type is FULL, skip the --END OF THE MINIMAL INSTALLATION-- line
@@ -49,9 +48,30 @@ do
     echo "INSTALLING: ${line}"
     pikaur -S --noconfirm --needed ${line}
 done
+
+$e "Installing Lutris Dependencies"
+cat $HOME/arch-base-install/pkg-files/lutris-deps.txt | while read line
+do
+    if [[ ${line} == '--END OF INSTALL--' ]]; then
+        continue
+    fi
+    $e "INSTALLING: ${line}"
+    pacman -Sy --noconfirm --needed ${line}
+$e "Installing Lutris Dependencies"
+cat $HOME/arch-base-install/pkg-files/lutris-deps.txt | while read line
+do
+    if [[ ${line} == '--END OF INSTALL--' ]]; then
+        continue
+    fi
+    $e "INSTALLING: ${line}"
+    pacman -Sy --noconfirm --needed ${line}
+done
+
+done
+
 # Enabling sddm service
 $sctle sddm
 # Todo add git repo for dot files
-git clone https://github.com/abugger1/hyprlanddots/tree/master
+git clone https://github.com/abugger1/dots.git $HOME/repos
 cd $HOME/repos/dots/ || cd exit || return
-# rsync -avxAHXP --exclude '.git*' .* ~/
+rsync -avxAHXP --exclude '.git*' .* ~/

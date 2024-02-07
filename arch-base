@@ -230,8 +230,9 @@ set_username(){
 set_username
 
 
-
-    mv /arch-base-install /home/sshep/repos
+    mkdir $HOME/repos
+    mv /arch-base-install $HOME/repos
+    chown -hR sshep:sshep $HOME/repos
 
 
     $e "base install complete reboot and run next script \n"
