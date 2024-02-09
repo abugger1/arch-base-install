@@ -73,5 +73,5 @@ done
 $sctle sddm
 # Todo add git repo for dot files
 git clone https://github.com/abugger1/dots.git $HOME/repos
-cd $HOME/repos/dots/ || cd exit || return
-rsync -avxAHXP --exclude '.git*' .* ~/
+# cd $HOME/repos/dots/ || cd exit || return
+# rsync -avxAHXP --exclude '.git*' .* ~/
