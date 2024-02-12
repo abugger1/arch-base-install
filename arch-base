@@ -37,7 +37,7 @@ if [ ! -d /etc/localtime ]; then
 fi
 
 
-$si 's/^#en_US.UTF-8 UTF-8//en_US.UTF-8 UTF-8' /etc/locale.gen
+$si 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8' /etc/locale.gen
 # $si '171s/.//' /etc/locale.gen
 locale-gen
 # localectl --no-ask-password set-locale LANG=" en_US.UTF-8" LC_TIME=" en_US.UTF-8"
