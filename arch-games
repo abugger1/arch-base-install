@@ -38,6 +38,8 @@ flatpak install flathub com.usebottles.bottles
 # flatpak run com.usebottles.bottles
 
 
+   yes | pacman -Sy  --needed lutris
+
 $e "Installing Lutris Dependencies"
 cat $HOME/arch-base-install/pkg-files/lutris-deps | while read line
 do
