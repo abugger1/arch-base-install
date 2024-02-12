@@ -75,7 +75,7 @@ $pcm -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 
 
 $e "[chaotic-aur]
 #Siglevel=never
-Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
+Include = /etc/pacman.d/chaotic-mirrorlist" >> /etc/pacman.conf
     $si '78s/#//' /etc/pacman.conf
     $si '79s/#//' /etc/pacman.conf
     $si '84s/#//' /etc/pacman.conf
@@ -162,13 +162,13 @@ fi
 
 
 $e "Installing Base Packages"
-cat $HOME/arch-base-install/pkg-files/basepkgs.txt | while read line
+cat /arch-base-install/pkg-files/basepkglist.txt | while read line
 do
     if [[ ${line} == '--END OF BASE INSTALL--' ]]; then
         continue
     fi
     $e "INSTALLING: ${line}"
-    pikaur -S --noconfirm --needed ${line}
+    $enstall "${line}"
 done
 
 
@@ -181,15 +181,11 @@ end
 fi
 
 
-if [[ ! -d /boot/grub ]]; then
     grub-install --target=X86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 
     $si 's/GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet"/GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet splash amd_iommu=on iommu=pt nvidia_drm.modeset=1"/'
 
     grub-mkconfig -o /boot/grub/grub.cfg
-else
-    $e "grub already installed"
-    fi
 
 
 
@@ -222,6 +218,7 @@ set_password
 
 set_username(){
     read -rs -p "Please enter user name: " USERNAME0
+    $e "${USERNAME0}"
     useradd -m "${USERNAME0}"
     usermod -aG libvirt "${USERNAME0}"
     usermod -aG libvirt-qemu "${USERNAME0}"
@@ -235,4 +232,4 @@ set_username
     chown -hR sshep:sshep $HOME/repos
 
 
-    $e "base install complete reboot and run next script \n"
+    $e "base install complete reboot and run next script" \n
