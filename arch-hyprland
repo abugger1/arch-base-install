@@ -8,6 +8,7 @@ senstall="sudo pacman -Sy --noconfirm"
 # Set Time ntp on systohc
 sudo timedatectl set-ntp true
 sudo hwclock --systohc
+localectl --no-ask-password set-locale LANG=" en_US.UTF-8" LC_TIME=" en_US.UTF-8"
 # Install deps for making rustup
 $senstall gcc gcc-libs cmake make ninja
 # Install rustup
