@@ -17,8 +17,10 @@ enstall="pacman -Sy --noconfirm --needed"
 iso=$(curl -4 ifconfig.co/country-iso)
 timedatectl set-ntp true
 $enstall archlinux-keyring
+$pky --init
+$pky --populate
 $enstall pacman-contrib terminus-font
-setfont ter-v22b
+setfont ter-v32b
 
 
 cp /etc/makepkg.conf /etc/makepkg.conf.bkp
@@ -37,7 +39,8 @@ fi
 
 
 hwclock --systohc
-$si '171s/.//' /etc/locale.gen
+$si 's/^#en_US.UTF-8 UTF-8//en_US.UTF-8 UTF-8' /etc/locale.gen
+# $si '171s/.//' /etc/locale.gen
 locale-gen
 localectl --no-ask-password set-locale LANG=" en_US.UTF-8" LC_TIME=" en_US.UTF-8"
 reflector -a 48 -c "$iso" -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
@@ -45,7 +48,7 @@ mkdir /mnt &>/dev/null
 
 
 $e "arch" >> /etc/hostname
-$e  "127.0.0.1    localhost" >> /etc/hosts
+$e "127.0.0.1    localhost" >> /etc/hosts
 $e "::1          localhost" >> /etc/hosts
 $e "127.0.1.1    arch.localdomain arch"  >> /etc/hosts
 
@@ -76,12 +79,12 @@ $pcm -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 
 $e "[chaotic-aur]
 #Siglevel=never
 Include = /etc/pacman.d/chaotic-mirrorlist" >> /etc/pacman.conf
-    $si '78s/#//' /etc/pacman.conf
-    $si '79s/#//' /etc/pacman.conf
-    $si '84s/#//' /etc/pacman.conf
-    $si '85s/#//' /etc/pacman.conf
-    $si '93s/#//' /etc/pacman.conf
-    $si '94s/#//' /etc/pacman.conf
+    # $si '78s/#//' /etc/pacman.conf
+    # $si '79s/#//' /etc/pacman.conf
+    # $si '84s/#//' /etc/pacman.conf
+    # $si '85s/#//' /etc/pacman.conf
+    # $si '93s/#//' /etc/pacman.conf
+    # $si '94s/#//' /etc/pacman.conf
 
 
 
@@ -181,11 +184,11 @@ end
 fi
 
 
-    grub-install --target=X86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+    # grub-install --target=X86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 
-    $si 's/GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet"/GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet splash amd_iommu=on iommu=pt nvidia_drm.modeset=1"/'
+    # $si 's/GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet"/GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet splash amd_iommu=on iommu=pt nvidia_drm.modeset=1"/'
 
-    grub-mkconfig -o /boot/grub/grub.cfg
+    # grub-mkconfig -o /boot/grub/grub.cfg
 
 
 
@@ -199,6 +202,17 @@ fi
     $sctle acpi
 
 
+    set_username(){
+        read -rs -p "Please enter user name: " USERNAME0
+        $e "${USERNAME0}"
+        useradd -m "${USERNAME0}"
+        # usermod -aG libvirt "${USERNAME0}"
+        # usermod -aG libvirt-qemu "${USERNAME0}"
+        $e "${USERNAME0} ALL=(ALL) ALL" >> /etc/sudoers
+    }
+    set_username
+
+
 
     set_password() {
         read -rs -p "Please enter user password: " PASSWORD2
@@ -206,7 +220,7 @@ fi
         read -rs -p "Please enter user password: " PASSWORD3
         $e -ne "\n"
         if [[ "$PASSWORD2" == "$PASSWORD3" ]]; then
-            $e "sshep:${PASSWORD2} | chpasswd"
+            $e "${USERNAME0}:${PASSWORD2} | chpasswd"
         else
             $e -ne "ERROR! passwords do not match. \n"
             set_password
@@ -216,20 +230,9 @@ set_password
 
 
 
-set_username(){
-    read -rs -p "Please enter user name: " USERNAME0
-    $e "${USERNAME0}"
-    useradd -m "${USERNAME0}"
-    usermod -aG libvirt "${USERNAME0}"
-    usermod -aG libvirt-qemu "${USERNAME0}"
-    $e "${USERNAME0} ALL=(ALL) ALL" >> /etc/sudoers
-}
-set_username
-
-
     mkdir $HOME/repos
-    mv /arch-base-install $HOME/repos
+    cp /arch-base-install $HOME/repos
     chown -hR sshep:sshep $HOME/repos
 
 
-    $e "base install complete reboot and run next script" \n
+    $e -ne "base install complete reboot and run next script" \n

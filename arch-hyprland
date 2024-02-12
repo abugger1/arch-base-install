@@ -6,31 +6,30 @@ e="echo"
 sctle="sudo systemctl enable"
 senstall="sudo pacman -Sy --noconfirm"
 # Set Time ntp on systohc
-sudo timedatectl set-ntp tru
-sudo hwclock --systoh
+sudo timedatectl set-ntp true
+sudo hwclock --systohc
 # Install deps for making rustup
 $senstall gcc gcc-libs cmake make ninja
 # Install rustup
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # Update source in shell
-chmod +x $HOME/.cargo/env
 source $HOME/.cargo/env
 # Install pikaur
-if [[ ! -d ~/repos ]]; then
-    mkdir repos
-    cd repos || cd ... || return
+if [[ ! -d $HOME/git-builds ]]; then
+    mkdir$HOME/git-builds 
+    cd $HOME/git-builds || cd ... || return
     git clone https://aur.archlinux.org/pikaur.git
     cd pikaur || cd exit || return
     makepkg -si
     cd || cd ... || return
-    rm -rf repos/pikaur
+    rm -rf $HOME/git-builds/pikaur
 else
-    cd repos || cd ... || return
+    cd $HOME/git-builds || cd ... || return
     git clone https://aur.archlinux.org/pikaur.git
     cd pikaur || cd exit || return
     makepkg -si
     cd || cd ... || return
-    rm -rf repos/pikaur
+    rm -rf $HOME/git-builds/pikaur
 fi
 # Installing zramd and timeshift
 pikaur -S zramd timeshift timeshift-autosnap
@@ -72,6 +71,6 @@ done
 # Enabling sddm service
 $sctle sddm
 # Todo add git repo for dot files
-git clone https://github.com/abugger1/dots.git $HOME/repos
+# git clone https://github.com/abugger1/dots.git $HOME/repos
 # cd $HOME/repos/dots/ || cd exit || return
 # rsync -avxAHXP --exclude '.git*' .* ~/
