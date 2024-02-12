@@ -14,6 +14,7 @@ $senstall gcc gcc-libs cmake make ninja
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # Update source in shell
 source $HOME/.cargo/env
+
 # Install pikaur
 if [[ ! -d $HOME/git-builds ]]; then
     mkdir$HOME/git-builds 
@@ -31,6 +32,7 @@ else
     cd || cd ... || return
     rm -rf $HOME/git-builds/pikaur
 fi
+
 # Installing zramd and timeshift
 pikaur -S zramd timeshift timeshift-autosnap
 # Enabling zramd
@@ -38,10 +40,10 @@ $sctle --now zramd
 # Installing starship
 cargo install starship
 # Installing hyprland and deps
+
 cat $HOME/repos/arch-base-install/pkg-files/hyprpkgs.txt | while read line
 do
     if [[ ${line} == '--END OF INSTALL--' ]]; then
-        # If selected installation type is FULL, skip the --END OF THE MINIMAL INSTALLATION-- line
         continue
     fi
     echo "INSTALLING: ${line}"
@@ -56,16 +58,6 @@ do
     fi
     $e "INSTALLING: ${line}"
     pacman -Sy --noconfirm --needed ${line}
-$e "Installing Lutris Dependencies"
-cat $HOME/arch-base-install/pkg-files/lutris-deps.txt | while read line
-do
-    if [[ ${line} == '--END OF INSTALL--' ]]; then
-        continue
-    fi
-    $e "INSTALLING: ${line}"
-    pacman -Sy --noconfirm --needed ${line}
-done
-
 done
 
 # Enabling sddm service

@@ -15,7 +15,6 @@ enstall="pacman -Sy --noconfirm --needed"
 
 
 iso=$(curl -4 ifconfig.co/country-iso)
-timedatectl set-ntp true
 $enstall archlinux-keyring
 $pky --init
 $pky --populate
@@ -38,7 +37,6 @@ if [ ! -d /etc/localtime ]; then
 fi
 
 
-hwclock --systohc
 $si 's/^#en_US.UTF-8 UTF-8//en_US.UTF-8 UTF-8' /etc/locale.gen
 # $si '171s/.//' /etc/locale.gen
 locale-gen
@@ -67,9 +65,6 @@ set_root_password() {
 set_root_password
 
 
-$enstall archlinux-keyring
-$pky --init
-$pky --populate
 $pky --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
 $pky --lsign-key 3056513887B78AEB
 $pcm -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
@@ -192,7 +187,7 @@ fi
 
 
 
-    $sctle networkmanager
+    $sctle NetworkManager
     $sctle bluetooth
     $sctle sshd
     $sctle tlp
@@ -235,4 +230,4 @@ set_password
     chown -hR sshep:sshep $HOME/repos
 
 
-    $e -ne "base install complete reboot and run next script" \n
+    $e -ne "base install complete reboot and run next script \n"

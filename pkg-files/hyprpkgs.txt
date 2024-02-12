@@ -1,3 +1,4 @@
+xwaylandvideobridge-cursor-mode-2-git
 vivid
 kvantum
 flameshot
@@ -43,7 +44,6 @@ ttf-jetbrains-mono
 ttf-icomoon-feather
 xdg-desktop-portal-hyprland-git
 xdotool
-xwaylandvideobridge-cursor-mode-2-git
 cliphist
 qt5-imageformats
 qt5ct
