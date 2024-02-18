@@ -4,8 +4,9 @@
 #
 e="echo"
 sctle="sudo systemctl enable"
-senstall="sudo pacman -Sy --noconfirm"
+senstall="sudo pacman -S --noconfirm"
 # Set Time ntp on systohc
+sudo pacman -Syyy
 sudo timedatectl set-ntp true
 sudo hwclock --systohc
 localectl --no-ask-password set-locale LANG=" en_US.UTF-8" LC_TIME=" en_US.UTF-8"
