@@ -1,7 +1,7 @@
 #!/bin/bash
 # Set Vars
 e="echo"
-senstall="sudo pacman -Sy --needed --noconfirm"
+senstall="sudo aura -S --needed"
 # -------------------------------------
 # Install flatpak
 # -------------------------------------
@@ -19,7 +19,7 @@ fi
 # -------------------------------------
 # Install heroic
 # -------------------------------------
-flatpak install flathub com.heroicgameslauncher.hgl
+sudo flatpak install flathub com.heroicgameslauncher.hgl
 # flatpak run com.heroicgameslauncher.hgl
 # -------------------------------------
 # Install lutrus
@@ -29,24 +29,24 @@ flatpak install flathub com.heroicgameslauncher.hgl
 # -------------------------------------
 # Install proton-up-qt
 # -------------------------------------
-flatpak install flathub net.davidotek.pupgui2
+sudo flatpak install flathub net.davidotek.pupgui2
 # flatpak run net.davidotek.pupgui2
 # ------------------------------------
 # Install Bottles
 # ------------------------------------
-flatpak install flathub com.usebottles.bottles
+sudo flatpak install flathub com.usebottles.bottles
 # flatpak run com.usebottles.bottles
 
 
-   yes | pacman -Sy  --needed lutris
+   sudo aura -S --needed --noconfirm lutris
 
 $e "Installing Lutris Dependencies"
-cat $HOME/arch-base-install/pkg-files/lutris-deps | while read line
+cat $HOME/repos/arch-base-install/pkg-files/lutris-deps.txt | while read line
 do
     if [[ ${line} == '--END OF INSTALL--' ]]; then
         continue
     fi
     $e "INSTALLING: ${line}"
-    pacman -Sy --noconfirm --needed ${line}
+    sudo aura -Sy --noconfirm --needed ${line}
 done
 

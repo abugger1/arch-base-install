@@ -4,43 +4,43 @@
 #
 e="echo"
 sctle="sudo systemctl enable"
-senstall="sudo pacman -Sy --noconfirm"
+senstall="sudo aura -S"
 # Set Time ntp on systohc
 sudo timedatectl set-ntp true
 sudo hwclock --systohc
-localectl --no-ask-password set-locale LANG=" en_US.UTF-8" LC_TIME=" en_US.UTF-8"
+# sudo localectl  set-locale LANG=" en_US.UTF-8" LC_TIME=" en_US.UTF-8"
 # Install deps for making rustup
-$senstall gcc gcc-libs cmake make ninja
+# $senstall gcc gcc-libs cmake make ninja
 # Install rustup
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # Update source in shell
-source $HOME/.cargo/env
+# source $HOME/.cargo/env
 
 # Install pikaur
-if [[ ! -d $HOME/git-builds ]]; then
-    mkdir$HOME/git-builds 
-    cd $HOME/git-builds || cd ... || return
-    git clone https://aur.archlinux.org/pikaur.git
-    cd pikaur || cd exit || return
-    makepkg -si
-    cd || cd ... || return
-    rm -rf $HOME/git-builds/pikaur
-else
-    cd $HOME/git-builds || cd ... || return
-    git clone https://aur.archlinux.org/pikaur.git
-    cd pikaur || cd exit || return
-    makepkg -si
-    cd || cd ... || return
-    rm -rf $HOME/git-builds/pikaur
-fi
-
-# Installing zramd and timeshift
-pikaur -S zramd timeshift timeshift-autosnap
-# Enabling zramd
-$sctle --now zramd
-# Installing starship
-cargo install starship
-# Installing hyprland and deps
+# if [[ ! -d $HOME/git-builds ]]; then
+#     mkdir$HOME/git-builds 
+#     cd $HOME/git-builds || cd ... || return
+#     git clone https://aur.archlinux.org/pikaur.git
+#     cd pikaur || cd exit || return
+#     makepkg -si
+#     cd || cd ... || return
+#     rm -rf $HOME/git-builds/pikaur
+# else
+#     cd $HOME/git-builds || cd ... || return
+#     git clone https://aur.archlinux.org/pikaur.git
+#     cd pikaur || cd exit || return
+#     makepkg -si
+#     cd || cd ... || return
+#     rm -rf $HOME/git-builds/pikaur
+# fi
+#
+# # Installing zramd and timeshift
+# pikaur -S zramd timeshift timeshift-autosnap
+# # Enabling zramd
+# $sctle --now zramd
+# # Installing starship
+# cargo install starship
+# # Installing hyprland and deps
 
 cat $HOME/repos/arch-base-install/pkg-files/hyprpkgs.txt | while read line
 do
@@ -48,21 +48,21 @@ do
         continue
     fi
     echo "INSTALLING: ${line}"
-    pikaur -S --noconfirm --needed ${line}
+    pikaur -S --needed ${line}
 done
 
 $e "Installing Lutris Dependencies"
-cat $HOME/arch-base-install/pkg-files/lutris-deps.txt | while read line
+cat $HOME/repos/arch-base-install/pkg-files/lutris-deps.txt | while read line
 do
     if [[ ${line} == '--END OF INSTALL--' ]]; then
         continue
     fi
     $e "INSTALLING: ${line}"
-    pacman -Sy --noconfirm --needed ${line}
+    sudo aura -Sy --noconfirm --needed ${line}
 done
 
 # Enabling sddm service
-$sctle sddm
+# $sctle sddm
 # Todo add git repo for dot files
 # git clone https://github.com/abugger1/dots.git $HOME/repos
 # cd $HOME/repos/dots/ || cd exit || return

@@ -2,19 +2,12 @@ xwaylandvideobridge-cursor-mode-2-git
 vivid
 kvantum
 flameshot
-zsh
-zsh-completions
-kitty
 kitty-terminfo
 unzip
-zoxide
-fzf
-wezterm
 tmux
 aria2
 bat
 fmn
-hyprland-git
 python
 hyprpicker-git
 waybar-git
@@ -36,6 +29,7 @@ playerctl
 polkit-kde-agent
 qt5-wayland
 qt6-wayland
+qt6ct
 qt5ct
 qt5-quickcontrols
 qt5-quickcontrols2
