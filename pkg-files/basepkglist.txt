@@ -11,8 +11,18 @@ gvfs
 gvfs-smb
 nfs-utils
 inetutils
+blueman
+bluetooth-autoconnect
+bluetooth-support
 bluez
+bluez-cups
+bluez-hid2hci
+bluez-libs
+bluez-tools
 bluez-utils
+linux-api-headers
+linux-firmware
+linux-firmware-whence
 pipewire
 pipewire-alsa
 pipewire-pulse
@@ -29,10 +39,15 @@ vde2
 openbsd-netcat
 iptables-nft
 ipset
+iputils
 firewalld
 sof-firmware
 nss-mdns
 acpid
 ntfs-3g
 btrfs-progs
+btrfs-assisstant
+btrfsmaintenance
+grub-btrfs
+os-prober-btrfs
 --END OF BASE INSTALL--

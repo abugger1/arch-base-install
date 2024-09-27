@@ -1,7 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Set Vars
 e="echo"
-senstall="sudo aura -S --needed"
+senstall="sudo pacman -S --needed"
+sudo pacman -Syu --noconfirm
 # -------------------------------------
 # Install flatpak
 # -------------------------------------
@@ -12,30 +13,30 @@ else
   exit
 fi
 # ------------------------------------
-# Install Steam
+Install Steam
 # ------------------------------------
-# flatpak install flathub com.valvesoftware.Steam
-# flatpak run com.valvesoftware.Steam
+flatpak install flathub com.valvesoftware.Steam
+flatpak run com.valvesoftware.Steam
 # -------------------------------------
 # Install heroic
 # -------------------------------------
 sudo flatpak install flathub com.heroicgameslauncher.hgl
-# flatpak run com.heroicgameslauncher.hgl
+flatpak run com.heroicgameslauncher.hgl
 # -------------------------------------
 # Install lutrus
 # -------------------------------------
-# flatpak install flathub net.lutris.Lutris
-# flatpak run net.lutris.Lutris
+flatpak install flathub net.lutris.Lutris
+flatpak run net.lutris.Lutris
 # -------------------------------------
-# Install proton-up-qt
+Install proton-up-qt
 # -------------------------------------
 sudo flatpak install flathub net.davidotek.pupgui2
-# flatpak run net.davidotek.pupgui2
+flatpak run net.davidotek.pupgui2
 # ------------------------------------
 # Install Bottles
 # ------------------------------------
 sudo flatpak install flathub com.usebottles.bottles
-# flatpak run com.usebottles.bottles
+flatpak run com.usebottles.bottles
 
 
    sudo aura -S --needed --noconfirm lutris
@@ -47,6 +48,6 @@ do
         continue
     fi
     $e "INSTALLING: ${line}"
-    sudo aura -Sy --noconfirm --needed ${line}
+    sudo pacman -Sy --noconfirm --needed ${line}
 done
 
