@@ -26,7 +26,7 @@ cp /etc/makepkg.conf /etc/makepkg.conf.bkp
 cp /etc/pacman.conf /etc/pacman.conf.bkp
 
 
-$si 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
+$si 's/^#ParallelDownloads=5/ParallelDownloads=15/' /etc/pacman.conf
 $si 's/^#Color/Color/' /etc/pacman.conf
 
 
@@ -38,17 +38,16 @@ fi
 
 
 $si 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
-# $si '171s/.//' /etc/locale.gen
 locale-gen
-# localectl --no-ask-password set-locale LANG=" en_US.UTF-8" LC_TIME=" en_US.UTF-8"
 reflector -a 48 -c "$iso" -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
 mkdir /mnt &>/dev/null
 
 
 $e "arch" >> /etc/hostname
-$e "127.0.0.1    localhost" >> /etc/hosts
-$e "::1          localhost" >> /etc/hosts
-$e "127.0.1.1    arch.localdomain arch"  >> /etc/hosts
+{ $e "127.0.0.1    localhost";
+    $e "::1          localhost";
+    $e "127.0.1.1    arch.localdomain arch"
+} >> /etc/hosts
 
 
 set_root_password() {
@@ -70,18 +69,22 @@ $pky --lsign-key 3056513887B78AEB
 $pcm -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
 
 
-
-$e "[chaotic-aur]
-#Siglevel=never
-Include = /etc/pacman.d/chaotic-mirrorlist" >> /etc/pacman.conf
-    # $si '78s/#//' /etc/pacman.conf
-    # $si '79s/#//' /etc/pacman.conf
-    # $si '84s/#//' /etc/pacman.conf
-    # $si '85s/#//' /etc/pacman.conf
-    # $si '93s/#//' /etc/pacman.conf
-    # $si '94s/#//' /etc/pacman.conf
+$si '/#[multilib]/[multilib]/' /etc/pacman.conf
+$si '/#Include = /etc/pacman.d/mirrorlist/Include = /etc/pacman.d/mirrorlist/' /etc/pacman.conf
+$si '/#[extra]/[extra]/' /etc/pacman.conf
+$si '/#Include = /etc/pacman.d/mirrorlist/Include = /etc/pacman.d/mirrorlist/' /etc/pacman.conf
 
 
+{ $e "[chaotic-aur]
+    #Siglevel=never
+    Include = /etc/pacman.d/chaotic-mirrorlist";
+
+    $e "[garuda]
+    Include = /etc/pacman.d/chaotic-mirrorlist";
+
+    $e "[blackarch]
+    Include = /etc/pacman.d/blackarch-mirrorlist";
+} >> /etc/pacman.conf
 
  # nc=$(grep -c ^processor /proc/cpuinfo)
  # $e -ne "
@@ -110,16 +113,16 @@ Include = /etc/pacman.d/chaotic-mirrorlist" >> /etc/pacman.conf
 
 
 
-proc_type=$(lscpu)
-if grep -E "GenuineIntel" <<< ${proc_type}; then
-    $e "Installing Intel microcode"
-    $enstall --needed intel-ucode
-    proc_ucode=intel-ucode.img
-elif grep -E "AuthenticAMD" <<< ${proc_type}; then
-    $e "Installing AMD microcode"
-    $enstall --needed amd-ucode
-    proc_ucode=amd-ucode.img
-fi
+ proc_type=$(lscpu)
+ if grep -E "GenuineIntel" <<< ${proc_type}; then
+     $e "Installing Intel microcode"
+     $enstall --needed intel-ucode
+     proc_ucode=intel-ucode.img
+ elif grep -E "AuthenticAMD" <<< ${proc_type}; then
+     $e "Installing AMD microcode"
+     $enstall --needed amd-ucode
+     proc_ucode=amd-ucode.img
+ fi
 
 
 
@@ -225,9 +228,9 @@ set_password
 
 
 
-    mkdir $HOME/repos
-    cp -r /arch-base-install $HOME/repos
-    chown -hR $USERNAME0:$USERNAME0 $HOME/repos
+    mkdir "$HOME"/repos
+    cp -r /arch-base-install "$HOME"/repos
+    chown -hR "$USERNAME0":"$USERNAME0" "$HOME"/repos
 
 
-    $e -ne "password setting is buggy still trying to fix manually set password with passwd $USERNAME and passwd root \n"
+    $e -ne "password setting is buggy still trying to fix manually set password with passwd $USERNAME0 and passwd root \n"

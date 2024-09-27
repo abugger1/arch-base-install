@@ -46,7 +46,7 @@ nss-mdns
 acpid
 ntfs-3g
 btrfs-progs
-btrfs-assisstant
+btrfs-assistant
 btrfsmaintenance
 grub-btrfs
 os-prober-btrfs

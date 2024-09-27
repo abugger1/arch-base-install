@@ -3,8 +3,8 @@
 nc=$(grep -c ^processor /proc/cpuinfo)
 echo -ne "
 -------------------------------------------------------------------------
-You have " $nc" cores. And
-changing the makeflags for "$nc" cores. Aswell as
+You have ' $nc' cores. And
+changing the makeflags for '$nc' cores. Aswell as
 changing the compression settings.
 -------------------------------------------------------------------------
 "

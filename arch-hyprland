@@ -32,7 +32,7 @@ do
     if [[ ${line} == '--END OF INSTALL--' ]]; then
         continue
     fi
-    echo "INSTALLING: ${line}"
+    $e "INSTALLING: ${line}"
     yay -S --needed ${line}
 done
 
