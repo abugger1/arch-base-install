@@ -14,15 +14,16 @@ sudo hwclock --systohc
 $senstall gcc gcc-libs cmake make ninja
 # Install rustup
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-Update source in shell
+# Update source in shell
 source $HOME/.cargo/env
 
 $senstall yay
 
 # Installing zramd and timeshift
-yay -S zramd timeshift timeshift-autosnap
+yay -S zram-init timeshift timeshift-autosnap
 # Enabling zramd
-$sctle --now zramd
+$sctle --now zram-swap
+$sctle --now zram-btrfs
 # Installing starship
 cargo install starship
 # Installing hyprland and deps
@@ -33,7 +34,7 @@ do
         continue
     fi
     $e "INSTALLING: ${line}"
-    yay -S --needed ${line}
+    yay -S --noconfirm --needed ${line}
 done
 
 $e "Installing Lutris Dependencies"
@@ -43,7 +44,7 @@ do
         continue
     fi
     $e "INSTALLING: ${line}"
-    yay -Sy --noconfirm --needed ${line}
+    yay -S --noconfirm --needed ${line}
 done
 
 # Enabling sddm service

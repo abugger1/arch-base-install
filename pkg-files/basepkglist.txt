@@ -37,7 +37,6 @@ bridge-utils
 dnsmasq
 vde2
 openbsd-netcat
-iptables-nft
 ipset
 iputils
 firewalld

@@ -39,9 +39,6 @@ beautyline
 bind
 binutils
 bison
-blackarch-keyring
-blackarch-menus
-blackarch-mirrorlist
 blas
 blueman
 bluetooth-autoconnect
@@ -70,7 +67,7 @@ ca-certificates-utils
 cachyos-ananicy-rules-git
 cairo
 cairomm
-cairomm-1.16
+cairomm
 candy-icons-git
 cantarell-fonts
 cblas
@@ -123,7 +120,6 @@ dnssec-anchors
 dosfstools
 double-conversion
 downgrade
-dracut
 droidcam
 duktape
 e2fsprogs
@@ -195,7 +191,6 @@ garuda-blackarch
 garuda-boot-options
 garuda-browser-settings
 garuda-common-settings
-garuda-dracut-support
 garuda-fish-config
 garuda-gamer
 garuda-hooks
@@ -235,12 +230,9 @@ glibmm-2.68
 glslang
 glu
 gmp
-gnome-desktop
-gnome-desktop-common
 gnome-firmware
 gnome-keyring
 gnome-logs
-gnome-system-monitor
 gnu-netcat
 gnupg
 gnustep-base
@@ -837,6 +829,7 @@ lpsolve
 lrzip
 lsb-release
 lua
+luarocks
 lua51-lpeg
 luajit
 lv2

@@ -11,7 +11,7 @@ si="sed -i"
 e="echo"
 pky="pacman-key"
 pcm="pacman"
-enstall="pacman -Sy --noconfirm --needed"
+enstall="pacman -S --noconfirm --needed"
 
 
 iso=$(curl -4 ifconfig.co/country-iso)
@@ -26,7 +26,7 @@ cp /etc/makepkg.conf /etc/makepkg.conf.bkp
 cp /etc/pacman.conf /etc/pacman.conf.bkp
 
 
-$si 's/^#ParallelDownloads=5/ParallelDownloads=15/' /etc/pacman.conf
+$si '#ParallelDownloads=5/ParallelDownloads=15/' /etc/pacman.conf
 $si 's/^#Color/Color/' /etc/pacman.conf
 
 
@@ -44,24 +44,24 @@ mkdir /mnt &>/dev/null
 
 
 $e "arch" >> /etc/hostname
-{ $e "127.0.0.1    localhost";
+{   $e "127.0.0.1    localhost";
     $e "::1          localhost";
     $e "127.0.1.1    arch.localdomain arch"
 } >> /etc/hosts
 
 
-set_root_password() {
-    read -rs -p "Please enter root password: " PASSWORD0
-    $e -ne "\n"
-    read -rs -p "Please re-enter root password: " PASSWORD1
-    if [[ "$PASSWORD0" == "$PASSWORD1" ]]; then
-        $e "root:${PASSWORD0} | chpasswd"
-    else
-        $e -ne "ERROR! Passwords do not match. \n"
-        set_root_password
-    fi
-}
-set_root_password
+# set_root_password() {
+#     read -rs -p "Please enter root password: " PASSWORD0
+#     $e -ne "\n"
+#     read -rs -p "Please re-enter root password: " PASSWORD1
+#     if [[ "$PASSWORD0" == "$PASSWORD1" ]]; then
+#         $e "root:${PASSWORD0} | chpasswd"
+#     else
+#         $e -ne "ERROR! Passwords do not match. \n"
+#         set_root_password
+#     fi
+# }
+# set_root_password
 
 
 $pky --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
@@ -74,17 +74,18 @@ $si '/#Include = /etc/pacman.d/mirrorlist/Include = /etc/pacman.d/mirrorlist/' /
 $si '/#[extra]/[extra]/' /etc/pacman.conf
 $si '/#Include = /etc/pacman.d/mirrorlist/Include = /etc/pacman.d/mirrorlist/' /etc/pacman.conf
 
+    # $e "[garuda]
+    # Include = /etc/pacman.d/chaotic-mirrorlist";
+    #
+    # $e "[blackarch]
+    # Include = /etc/pacman.d/blackarch-mirrorlist";
 
 { $e "[chaotic-aur]
     #Siglevel=never
     Include = /etc/pacman.d/chaotic-mirrorlist";
 
-    $e "[garuda]
-    Include = /etc/pacman.d/chaotic-mirrorlist";
-
-    $e "[blackarch]
-    Include = /etc/pacman.d/blackarch-mirrorlist";
 } >> /etc/pacman.conf
+pacman -Sy
 
  # nc=$(grep -c ^processor /proc/cpuinfo)
  # $e -ne "
@@ -197,7 +198,6 @@ fi
     $sctle fstrim.timer
     # $sctle libvirtd
     $sctle firewalld
-    $sctle acpi
 
 
     set_username(){
@@ -212,25 +212,25 @@ fi
 
 
 
-    set_password() {
-        read -rs -p "Please enter user password: " PASSWORD2
-        $e -ne "\n"
-        read -rs -p "Please enter user password: " PASSWORD3
-        $e -ne "\n"
-        if [[ "$PASSWORD2" == "$PASSWORD3" ]]; then
-            $e "${USERNAME0}:${PASSWORD2} | chpasswd"
-        else
-            $e -ne "ERROR! passwords do not match. \n"
-            set_password
-        fi
-    }
-set_password
+#     set_password() {
+#         read -rs -p "Please enter user password: " PASSWORD2
+#         $e -ne "\n"
+#         read -rs -p "Please enter user password: " PASSWORD3
+#         $e -ne "\n"
+#         if [[ "$PASSWORD2" == "$PASSWORD3" ]]; then
+#             $e "${USERNAME0}:${PASSWORD2} | chpasswd"
+#         else
+#             $e -ne "ERROR! passwords do not match. \n"
+#             set_password
+#         fi
+#     }
+# set_password
 
 
 
-    mkdir "$HOME"/repos
-    cp -r /arch-base-install "$HOME"/repos
-    chown -hR "$USERNAME0":"$USERNAME0" "$HOME"/repos
+    # mkdir "$HOME"/repos
+    # cp -r /arch-base-install "$HOME"/repos
+    # chown -hR "$USERNAME0":"$USERNAME0" "$HOME"/repos
 
 
     $e -ne "password setting is buggy still trying to fix manually set password with passwd $USERNAME0 and passwd root \n"
