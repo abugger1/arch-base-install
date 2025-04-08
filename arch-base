@@ -26,11 +26,11 @@ cp /etc/makepkg.conf /etc/makepkg.conf.bkp
 cp /etc/pacman.conf /etc/pacman.conf.bkp
 
 
-$si '#ParallelDownloads=5/ParallelDownloads=15/' /etc/pacman.conf
+$si 's/#ParallelDownloads=5/ParallelDownloads=15/' /etc/pacman.conf
 $si 's/^#Color/Color/' /etc/pacman.conf
 
 
-$enstall --needed reflector rsync grub
+$enstall reflector rsync grub
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
 if [ ! -d /etc/localtime ]; then
     ln -sf /usr/share/zoneinfo/US/Eastern /etc/localtime
@@ -69,10 +69,10 @@ $pky --lsign-key 3056513887B78AEB
 $pcm -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
 
 
-$si '/#[multilib]/[multilib]/' /etc/pacman.conf
-$si '/#Include = /etc/pacman.d/mirrorlist/Include = /etc/pacman.d/mirrorlist/' /etc/pacman.conf
-$si '/#[extra]/[extra]/' /etc/pacman.conf
-$si '/#Include = /etc/pacman.d/mirrorlist/Include = /etc/pacman.d/mirrorlist/' /etc/pacman.conf
+$si 's/#[multilib]/[multilib]/' /etc/pacman.conf
+$si 's/#Include = /etc/pacman.d/mirrorlist/Include = /etc/pacman.d/mirrorlist/' /etc/pacman.conf
+$si 's/#[extra]/[extra]/' /etc/pacman.conf
+$si 's/#Include = /etc/pacman.d/mirrorlist/Include = /etc/pacman.d/mirrorlist/' /etc/pacman.conf
 
     # $e "[garuda]
     # Include = /etc/pacman.d/chaotic-mirrorlist";
@@ -115,13 +115,13 @@ pacman -Sy
 
 
  proc_type=$(lscpu)
- if grep -E "GenuineIntel" <<< ${proc_type}; then
+ if grep -E "GenuineIntel" <<< "${proc_type}"; then
      $e "Installing Intel microcode"
-     $enstall --needed intel-ucode
+     $enstall intel-ucode
      proc_ucode=intel-ucode.img
- elif grep -E "AuthenticAMD" <<< ${proc_type}; then
+ elif grep -E "AuthenticAMD" <<< "${proc_type}"; then
      $e "Installing AMD microcode"
-     $enstall --needed amd-ucode
+     $enstall amd-ucode
      proc_ucode=amd-ucode.img
  fi
 
@@ -164,7 +164,7 @@ fi
 
 
 $e "Installing Base Packages"
-cat /arch-base-install/pkg-files/basepkglist.txt | while read line
+cat "/arch-base-install/pkg-files/basepkglist.txt" | while read -r line
 do
     if [[ ${line} == '--END OF BASE INSTALL--' ]]; then
         continue

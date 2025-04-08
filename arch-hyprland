@@ -4,7 +4,7 @@
 #
 e="echo"
 sctle="sudo systemctl enable"
-senstall="sudo pacman -S --noconfirm"
+senstall="sudo pacman -S --noconfirm --needed"
 # Set Time ntp on systohc
 sudo pacman -Syyy
 sudo timedatectl set-ntp true
@@ -15,7 +15,7 @@ $senstall gcc gcc-libs cmake make ninja
 # Install rustup
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # Update source in shell
-source $HOME/.cargo/env
+source "$HOME/.cargo/env"
 
 $senstall yay
 
@@ -28,23 +28,23 @@ $sctle --now zram-btrfs
 cargo install starship
 # Installing hyprland and deps
 
-cat $HOME/repos/arch-base-install/pkg-files/hyprpkgs.txt | while read line
+cat "$HOME/repos/arch-base-install/pkg-files/hyprpkgs.txt" | while read -r line
 do
     if [[ ${line} == '--END OF INSTALL--' ]]; then
         continue
     fi
     $e "INSTALLING: ${line}"
-    yay -S --noconfirm --needed ${line}
+    yay -S --noconfirm --needed "${line}"
 done
 
 $e "Installing Lutris Dependencies"
-cat $HOME/repos/arch-base-install/pkg-files/lutris-deps.txt | while read line
+cat "$HOME/repos/arch-base-install/pkg-files/lutris-deps.txt" | while read -r line
 do
     if [[ ${line} == '--END OF INSTALL--' ]]; then
         continue
     fi
     $e "INSTALLING: ${line}"
-    yay -S --noconfirm --needed ${line}
+    yay -S --noconfirm --needed "${line}"
 done
 
 # Enabling sddm service

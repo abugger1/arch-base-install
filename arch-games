@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Set Vars
 e="echo"
-senstall="sudo pacman -S --needed"
+senstall="sudo pacman -S --noconfirm --needed"
 sudo pacman -Syu --noconfirm
 # -------------------------------------
 # Install flatpak
@@ -39,15 +39,14 @@ sudo flatpak install flathub com.usebottles.bottles
 flatpak run com.usebottles.bottles
 
 
-   sudo aura -S --needed --noconfirm lutris
+   sudo pacman -S --needed --noconfirm lutris
 
 $e "Installing Lutris Dependencies"
-cat $HOME/repos/arch-base-install/pkg-files/lutris-deps.txt | while read line
+cat "$HOME/repos/arch-base-install/pkg-files/lutris-deps.txt" | while read -r line
 do
     if [[ ${line} == '--END OF INSTALL--' ]]; then
         continue
     fi
     $e "INSTALLING: ${line}"
-    sudo pacman -Sy --noconfirm --needed ${line}
+    sudo pacman -S --noconfirm --needed "${line}"
 done
-
