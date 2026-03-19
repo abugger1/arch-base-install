@@ -13,11 +13,11 @@ sudo hwclock --systohc
 # Install deps for making rustup
 $senstall gcc gcc-libs cmake make ninja
 # Install rustup
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # Update source in shell
 source "$HOME/.cargo/env"
 
-$senstall yay
+# $senstall yay
 
 # Installing zramd and timeshift
 yay -S zram-init timeshift timeshift-autosnap
@@ -25,7 +25,7 @@ yay -S zram-init timeshift timeshift-autosnap
 $sctle --now zram-swap
 $sctle --now zram-btrfs
 # Installing starship
-cargo install starship
+# cargo install starship
 # Installing hyprland and deps
 
 cat "$HOME/repos/arch-base-install/pkg-files/hyprpkgs.txt" | while read -r line
@@ -48,7 +48,7 @@ do
 done
 
 # Enabling sddm service
-$sctle sddm
+# $sctle sddm
 # Todo add git repo for dot files
 # git clone https://github.com/abugger1/dots.git $HOME/repos
 # cd $HOME/repos/dots/ || cd exit || return
